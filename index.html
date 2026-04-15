@@ -7,9 +7,6 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
 
-<!-- ✅ PWA -->
-<link rel="manifest" href="manifest.json">
-
 <style>
 body { margin:0; font-family:"Itim",sans-serif; background:#f5f6fa; }
 
@@ -261,6 +258,7 @@ function renderCalendar(){
 
     const saved=JSON.parse(localStorage.getItem(key));
 
+    // 🔥 background + overlay
     if(saved && saved.img){
       div.style.backgroundImage = `url(${saved.img})`;
       div.style.backgroundSize = "cover";
@@ -270,12 +268,8 @@ function renderCalendar(){
       overlay.style.position = "absolute";
       overlay.style.inset = "0";
       overlay.style.borderRadius = "20px";
-      overlay.style.pointerEvents = "none";
-
-      const op = saved.opacity || 0.3;
       overlay.style.background =
-        `linear-gradient(rgba(255,255,255,${op}), rgba(255,255,255,${op}))`;
-
+        `rgba(255,255,255,${saved.opacity || 0.3})`;
       div.appendChild(overlay);
     }
 
@@ -283,12 +277,15 @@ function renderCalendar(){
       div.classList.add("has-note");
     }
 
-    div.innerHTML += `
+    // ✅ FIX หน้าขาว (ห้ามใช้ innerHTML +=)
+    const content = document.createElement("div");
+    content.innerHTML=`
       <div class="day-name">${dayNames[date.getDay()]}</div>
       <div class="date-number">${i}</div>
       <div class="top-dots"></div>
       <div class="note-preview"></div>
     `;
+    div.appendChild(content);
 
     if(saved && saved.notes){
       const preview=div.querySelector(".note-preview");
@@ -404,7 +401,7 @@ function updateStyle(){
   document.getElementById("preview").style.filter=`blur(${blurValue}px)`;
 
   document.getElementById("overlay").style.background=
-    `linear-gradient(rgba(255,255,255,${opacityValue}), rgba(255,255,255,${opacityValue}))`;
+    `rgba(255,255,255,${opacityValue})`;
 }
 
 function save(){
@@ -433,13 +430,6 @@ function nextMonth(){ currentDate.setMonth(currentDate.getMonth()+1); renderCale
 function goToday(){ currentDate=new Date(); renderCalendar(); }
 
 renderCalendar();
-</script>
-
-<!-- ✅ PWA -->
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js');
-}
 </script>
 
 </body>
